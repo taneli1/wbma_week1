@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="bb3a9e05-9164-489b-80ec-594750273754" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-    </list>
+    <list default="true" id="bb3a9e05-9164-489b-80ec-594750273754" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,7 +18,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$USER_HOME$/AndroidStudioProjects/9LV01" />
     <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
   </component>
   <component name="SvnConfiguration">
@@ -43,5 +39,9 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="98" y="65" width="1443" height="880" key="AVDManager/0.0.2560.1400/-1848.349.1848.1080@0.0.2560.1400" timestamp="1610372321540" />
+    <state x="784" y="506" key="FileChooserDialogImpl" timestamp="1610382569172">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="784" y="506" key="FileChooserDialogImpl/0.0.2560.1400/-1849.349.1849.1080@0.0.2560.1400" timestamp="1610382569172" />
   </component>
 </project>

@@ -1,24 +1,35 @@
 /* eslint-disable max-len */
-import React from "react";
-import List from "./components/List";
+import React from 'react';
+import List from './components/List';
 
-import { StyleSheet, View } from "react-native";
+import {
+    ImageBackground,
+    SafeAreaView,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    View
+} from 'react-native';
 
 const App = () => {
-  return (
-    <View style={styles.container}>
-      <List />
-    </View>
-  );
+    return (
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="light-content" />
+            <List />
+        </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flex: 1,
-    backgroundColor: "#fff",
-    flexWrap: "wrap",
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff'
+    },
+    imageBg: {
+        width: 200,
+        height: 200
+    }
 });
 
 export default App;
