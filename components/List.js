@@ -2,18 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import ListItem from './ListItem';
 
-const url =
-    'https://raw.githubusercontent.com/mattpe/wbma/master/docs/assets/test.json';
+const url = 'http://media.mw.metropolia.fi/wbma/media/';
 
 const List = () => {
     const [mediaArray, setMediaArray] = useState([]);
 
     const loadMedia = async () => {
         try {
-            const response = await fetch(url);
-            const json = await response.json();
-            console.log('json fetch: ' + json);
-            setMediaArray(json);
+            const posts = await fetch(url);
+            const json = await posts.json();
+
+            const data = await Promise.all(
+                json.map(async (item) => {
+                    const response = await fetch(url + item.file_id);
+                    const rJson = response.json();
+                    return rJson;
+                })
+            );
+            setMediaArray(data);
         } catch (err) {
             console.log('loadmedia : ', err);
         }
