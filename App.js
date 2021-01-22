@@ -1,14 +1,16 @@
-/* eslint-disable max-len */
+/* eslint-disable ezxpo max-len */
 import React from 'react';
-import {MainContext, MainProvider} from './contexts/MainContext';
+import { MainProvider } from './contexts/MainContext';
 import Navigator from './navigators/Navigator';
 
 const App = () => {
     return (
-      <MainProvider>
-        <Navigator/>
-      </MainProvider>
-    )
+        <MainProvider>
+            <Navigator />
+        </MainProvider>
+    );
 };
+
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default App;
