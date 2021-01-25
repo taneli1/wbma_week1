@@ -1,13 +1,20 @@
-import { enableExpoCliLogging } from 'expo/build/logs/Logs';
 import { useEffect, useState } from 'react';
-import { Card } from 'react-native-elements';
 import { baseUrl } from '../utils/variables';
 
-const doFetch = (url, options = {}) => {
-    const response = fetch(url, options);
-    if (!response.ok) {
-        throw new Error('doFetch error');
-    } else return response.json();
+// general function for fetching (options default value is empty object)
+const doFetch = async (url, options = {}) => {
+    const response = await fetch(url, options);
+    const json = await response.json();
+    if (json.error) {
+        // if API response contains error message (use Postman to get further details)
+        throw new Error(json.message + ': ' + json.error);
+    } else if (!response.ok) {
+        // if API response does not contain error message, but there is some other error
+        throw new Error('doFetch failed');
+    } else {
+        // if all goes well
+        return json;
+    }
 };
 
 const useLoadMedia = () => {
@@ -15,22 +22,18 @@ const useLoadMedia = () => {
 
     const loadMedia = async (limit = 5) => {
         try {
-            const listResponse = await fetch(baseUrl + 'media?limit=' + limit);
-            const listJson = await listResponse.json();
+            const listJson = await doFetch(baseUrl + 'media?limit=' + limit);
             const media = await Promise.all(
                 listJson.map(async (item) => {
-                    const fileResponse = await fetch(
+                    const fileJson = await doFetch(
                         baseUrl + 'media/' + item.file_id
                     );
-                    const fileJson = fileResponse.json();
-                    // console.log('media file data', json);
                     return fileJson;
                 })
             );
-
             setMediaArray(media);
         } catch (error) {
-            console.error('loadMedia error', error);
+            console.error('loadMedia error', error.message);
         }
     };
     useEffect(() => {
@@ -47,16 +50,10 @@ const useLogin = () => {
             body: JSON.stringify(userCredentials)
         };
         try {
-            const response = await fetch(baseUrl + 'login', options);
-            const userData = await response.json();
-            if (response.ok) {
-                console.log('Returned json');
-                return userData;
-            } else {
-                throw new Error(userData.message);
-            }
+            const userData = await doFetch(baseUrl + 'login', options);
+            return userData;
         } catch (error) {
-            throw new Error(error.message);
+            throw new Error('postLogin error: ' + error.message);
         }
     };
 
@@ -74,16 +71,10 @@ const useUser = () => {
             body: JSON.stringify(inputs)
         };
         try {
-            const response = await fetch(baseUrl + 'users', fetchOptions);
-            const json = await response.json();
+            const json = await doFetch(baseUrl + 'users', fetchOptions);
             console.log('register resp', json);
-            if (response.ok) {
-                return json;
-            } else {
-                throw new Error(json.message + ': ' + json.error);
-            }
+            return json;
         } catch (e) {
-            console.log('ApiHooks register', e.message);
             throw new Error(e.message);
         }
     };
@@ -94,30 +85,26 @@ const useUser = () => {
                 method: 'GET',
                 headers: { 'x-access-token': token }
             };
-            const response = await fetch(baseUrl + 'users/user', options);
-            const userData = response.json();
-            if (response.ok) {
-                return userData;
-            } else {
-                throw new Error(userData.message);
-            }
+            const userData = await doFetch(baseUrl + 'users/user', options);
+            return userData;
         } catch (error) {
             throw new Error(error.message);
         }
     };
+
     return { postRegister, checkToken };
 };
 
 const useTag = () => {
     const getByTag = async (tag) => {
         try {
-            const array = await fetch(baseUrl + tag);
-            const json = await array.json();
-            return json;
+            const tagList = await doFetch(baseUrl + 'tags/' + tag);
+            return tagList;
         } catch (error) {
-            console.log('getByTag error: ', error);
+            throw new Error(error.message);
         }
     };
     return { getByTag };
 };
+
 export { useLoadMedia, useLogin, useUser, useTag };

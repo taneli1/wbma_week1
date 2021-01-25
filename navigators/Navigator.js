@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import {
@@ -9,7 +9,6 @@ import Home from '../views/Home';
 import Profile from '../views/Profile';
 import Single from '../views/Single';
 import Login from '../views/Login';
-import { useContext } from 'react';
 import { MainContext } from '../contexts/MainContext';
 import { Icon } from 'react-native-elements';
 
@@ -57,7 +56,13 @@ const StackScreen = () => {
                 </>
             ) : (
                 <>
-                    <Stack.Screen name="Login" component={Login} />
+                    <Stack.Screen
+                        name="Login"
+                        component={Login}
+                        options={() => ({
+                            headerShown: false
+                        })}
+                    />
                 </>
             )}
         </Stack.Navigator>
