@@ -1,13 +1,14 @@
 import React from 'react';
-import { Alert, Button, View } from 'react-native';
+import { Alert, View } from 'react-native';
 import PropTypes from 'prop-types';
-import { useRegister } from '../hooks/ApiHooks';
+import { useUser } from '../hooks/ApiHooks';
 import FormTextInput from './FormTextInput';
 import useSignUpForm from '../hooks/RegisterHooks';
+import { Button } from 'react-native-elements';
 
 const RegisterForm = ({ navigation }) => {
     const { inputs, handleInputChange } = useSignUpForm();
-    const { postRegister } = useRegister();
+    const { postRegister } = useUser();
 
     const doRegister = async () => {
         try {

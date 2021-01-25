@@ -1,5 +1,14 @@
+import { enableExpoCliLogging } from 'expo/build/logs/Logs';
 import { useEffect, useState } from 'react';
+import { Card } from 'react-native-elements';
 import { baseUrl } from '../utils/variables';
+
+const doFetch = (url, options = {}) => {
+    const response = fetch(url, options);
+    if (!response.ok) {
+        throw new Error('doFetch error');
+    } else return response.json();
+};
 
 const useLoadMedia = () => {
     const [mediaArray, setMediaArray] = useState([]);
@@ -8,7 +17,6 @@ const useLoadMedia = () => {
         try {
             const listResponse = await fetch(baseUrl + 'media?limit=' + limit);
             const listJson = await listResponse.json();
-            console.log('response json data', listJson);
             const media = await Promise.all(
                 listJson.map(async (item) => {
                     const fileResponse = await fetch(
@@ -19,7 +27,6 @@ const useLoadMedia = () => {
                     return fileJson;
                 })
             );
-            console.log('media array data', media);
 
             setMediaArray(media);
         } catch (error) {
@@ -42,9 +49,8 @@ const useLogin = () => {
         try {
             const response = await fetch(baseUrl + 'login', options);
             const userData = await response.json();
-            console.log('postLogin response status', response.status);
-            console.log('postLogin userData', userData);
             if (response.ok) {
+                console.log('Returned json');
                 return userData;
             } else {
                 throw new Error(userData.message);
@@ -54,28 +60,10 @@ const useLogin = () => {
         }
     };
 
-    const checkToken = async (token) => {
-        try {
-            const options = {
-                method: 'GET',
-                headers: { 'x-access-token': token }
-            };
-            const response = await fetch(baseUrl + 'users/user', options);
-            const userData = response.json();
-            if (response.ok) {
-                return userData;
-            } else {
-                throw new Error(userData.message);
-            }
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    };
-
-    return { postLogin, checkToken };
+    return { postLogin };
 };
 
-const useRegister = () => {
+const useUser = () => {
     const postRegister = async (inputs) => {
         console.log('trying to create user', inputs);
         const fetchOptions = {
@@ -99,7 +87,37 @@ const useRegister = () => {
             throw new Error(e.message);
         }
     };
-    return { postRegister };
+
+    const checkToken = async (token) => {
+        try {
+            const options = {
+                method: 'GET',
+                headers: { 'x-access-token': token }
+            };
+            const response = await fetch(baseUrl + 'users/user', options);
+            const userData = response.json();
+            if (response.ok) {
+                return userData;
+            } else {
+                throw new Error(userData.message);
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    };
+    return { postRegister, checkToken };
 };
 
-export { useLoadMedia, useLogin, useRegister };
+const useTag = () => {
+    const getByTag = async (tag) => {
+        try {
+            const array = await fetch(baseUrl + tag);
+            const json = await array.json();
+            return json;
+        } catch (error) {
+            console.log('getByTag error: ', error);
+        }
+    };
+    return { getByTag };
+};
+export { useLoadMedia, useLogin, useUser, useTag };

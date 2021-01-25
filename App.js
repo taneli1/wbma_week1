@@ -11,6 +11,4 @@ const App = () => {
     );
 };
 
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 export default App;
