@@ -1,12 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+    StyleSheet,
+    View,
+    Keyboard,
+    TouchableWithoutFeedback
+} from 'react-native';
 import PropTypes from 'prop-types';
 import { MainContext } from '../contexts/MainContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUser } from '../hooks/ApiHooks';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
-import { Button, Card, Text } from 'react-native-elements';
+import { Card, ListItem, Text } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const Login = ({ navigation }) => {
@@ -16,7 +21,7 @@ const Login = ({ navigation }) => {
 
     const getToken = async () => {
         const userToken = await AsyncStorage.getItem('userToken');
-        console.log('token: ', userToken);
+        console.log('token', userToken);
         if (userToken) {
             try {
                 const userData = await checkToken(userToken);
@@ -33,45 +38,57 @@ const Login = ({ navigation }) => {
     }, []);
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
-        >
-            <View style={styles.appTitle}>
-                <Text h1>MyApp</Text>
-            </View>
-            <View style={styles.form}>
-                <Text style={styles.text}>
-                    {formToggle ? 'No account?' : 'Already registered?'}
-                </Text>
-                <Button
-                    title={formToggle ? 'Register' : 'Login'}
-                    onPress={() => {
-                        setFormToggle(!formToggle);
-                    }}
-                />
-                {formToggle ? (
-                    <Card>
-                        <Card.Title h4>Login</Card.Title>
-                        <Card.Divider />
-                        <LoginForm navigation={navigation} />
-                    </Card>
-                ) : (
-                    <Card>
-                        <Card.Title h4>Register</Card.Title>
-                        <Card.Divider />
-                        <RegisterForm navigation={navigation} />
-                    </Card>
-                )}
-            </View>
-        </KeyboardAvoidingView>
+        <ScrollView>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.inner}>
+                    <View style={styles.appTitle}>
+                        <Text h4>MyApp</Text>
+                    </View>
+                    <View style={styles.form}>
+                        <Card>
+                            {formToggle ? (
+                                <>
+                                    <Card.Title h5>Login</Card.Title>
+                                    <Card.Divider />
+                                    <LoginForm navigation={navigation} />
+                                </>
+                            ) : (
+                                <>
+                                    <Card.Title h5>Register</Card.Title>
+                                    <Card.Divider />
+                                    <RegisterForm navigation={navigation} />
+                                </>
+                            )}
+                            <ListItem
+                                onPress={() => {
+                                    setFormToggle(!formToggle);
+                                }}
+                            >
+                                <ListItem.Content>
+                                    <Text style={styles.text}>
+                                        {formToggle
+                                            ? 'No account? Register here.'
+                                            : 'Already registered? Login here.'}
+                                    </Text>
+                                </ListItem.Content>
+                                <ListItem.Chevron />
+                            </ListItem>
+                        </Card>
+                    </View>
+                </View>
+            </TouchableWithoutFeedback>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1
+    },
+    inner: {
+        padding: 12,
         flex: 1,
-        padding: 16
+        justifyContent: 'space-around'
     },
     appTitle: {
         flex: 1,
