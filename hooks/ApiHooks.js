@@ -1,5 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
-import { baseUrl } from '../utils/variables';
+import { appTag, baseUrl } from '../utils/variables';
 
 const doFetch = async (url, options = {}) => {
     const response = await fetch(url, options);
@@ -18,7 +19,7 @@ const useLoadMedia = () => {
 
     const loadMedia = async (limit = 5) => {
         try {
-            const listJson = await doFetch(baseUrl + 'media?limit=' + limit);
+            const listJson = await doFetch(baseUrl + 'tags/' + appTag);
             const media = await Promise.all(
                 listJson.map(async (item) => {
                     const fileJson = await doFetch(
@@ -110,7 +111,42 @@ const useTag = () => {
             throw new Error(error.message);
         }
     };
-    return { getByTag };
+
+    const addTag = async (fileId) => {
+        console.log('AddTag Called: ', fileId);
+        const userToken = await AsyncStorage.getItem('userToken');
+        const axios = require('axios').default;
+
+        let formData = new FormData();
+        formData.append('file_id', fileId);
+        formData.append('tag', appTag);
+
+        const options = {
+            url: baseUrl + 'tags',
+            method: 'POST',
+            headers: {
+                'x-access-token': userToken
+            },
+            data: {
+                file_id: fileId,
+                tag: appTag
+            }
+        };
+
+        try {
+            await axios(options).then((res) => {
+                if (res.status == 201) {
+                    console.log('Tag added to post');
+                } else {
+                    console.log(res);
+                }
+            });
+        } catch (error) {
+            console.log('Addtag err: ', error);
+        }
+    };
+
+    return { getByTag, addTag };
 };
 
 export { useLoadMedia, useLogin, useUser, useTag };
