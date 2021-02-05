@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import PropTypes from 'prop-types';
@@ -8,6 +8,7 @@ import { baseUrl } from '../utils/variables';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackActions } from '@react-navigation/native';
 import { useTag } from '../hooks/ApiHooks';
+import { MainContext } from '../contexts/MainContext';
 
 const UploadForm = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
@@ -20,6 +21,7 @@ const UploadForm = ({ navigation }) => {
     } = useUploadForm();
     const [image, setImage] = useState(null);
     const { addTag } = useTag();
+    const { update, setUpdate } = useContext(MainContext);
 
     const doUpload = async () => {
         if (!validateOnSend()) {
@@ -33,14 +35,13 @@ const UploadForm = ({ navigation }) => {
 
         let localUri = image;
         let filename = localUri.split('/').pop();
-        console.log('IMAGE: ', image);
+
         // Infer the type of the image
         let match = /\.(\w+)$/.exec(filename);
         let type = match ? `image/${match[1]}` : `image`;
         if (type === 'image/jpg') type = 'image/jpeg';
-        // Upload the image using the fetch and FormData APIs
+
         let formData = new FormData();
-        // Assume "photo" is the name of the form field the server expects
         formData.append('file', { uri: localUri, name: filename, type });
         formData.append('title', inputs.title);
         formData.append('description', inputs.description);
@@ -60,7 +61,9 @@ const UploadForm = ({ navigation }) => {
                 if (res.status == 201) {
                     console.log('res: ', res.data.file_id);
                     addTag(res.data.file_id);
-                    delay(1000);
+                    delay(500);
+                    setUpdate(+1);
+                    delay(500);
                     navigation.dispatch(pushAction);
                 } else {
                     console.log(res.status);

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import {MainContext} from '../contexts/MainContext';
 import { appTag, baseUrl } from '../utils/variables';
 
 const doFetch = async (url, options = {}) => {
@@ -16,6 +17,7 @@ const doFetch = async (url, options = {}) => {
 
 const useLoadMedia = () => {
     const [mediaArray, setMediaArray] = useState([]);
+    const { update } = useContext(MainContext);
 
     const loadMedia = async (limit = 5) => {
         try {
@@ -35,7 +37,7 @@ const useLoadMedia = () => {
     };
     useEffect(() => {
         loadMedia(10);
-    }, []);
+    }, [update]);
     return mediaArray;
 };
 
