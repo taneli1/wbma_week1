@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useContext, useEffect, useState } from 'react';
-import {MainContext} from '../contexts/MainContext';
+import { MainContext } from '../contexts/MainContext';
 import { appTag, baseUrl } from '../utils/variables';
 
 const doFetch = async (url, options = {}) => {

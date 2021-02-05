@@ -17,7 +17,8 @@ const UploadForm = ({ navigation }) => {
         handleInputChange,
         validateOnSend,
         handleInputEnd,
-        uploadErrors
+        uploadErrors,
+        reset
     } = useUploadForm();
     const [image, setImage] = useState(null);
     const { addTag } = useTag();
@@ -62,8 +63,9 @@ const UploadForm = ({ navigation }) => {
                     console.log('res: ', res.data.file_id);
                     addTag(res.data.file_id);
                     delay(500);
-                    setUpdate(+1);
+                    setUpdate(update + 1);
                     delay(500);
+                    reset();
                     navigation.dispatch(pushAction);
                 } else {
                     console.log(res.status);
@@ -88,6 +90,11 @@ const UploadForm = ({ navigation }) => {
             setImage(result.uri);
             console.log(result.uri);
         }
+    };
+
+    const doReset = () => {
+        setImage(null);
+        reset;
     };
 
     useEffect(() => {
@@ -150,6 +157,7 @@ const UploadForm = ({ navigation }) => {
             />
             <Button
                 title="Reset form"
+                onPress={doReset}
                 style={{ width: '100%', marginTop: 20 }}
             />
         </View>

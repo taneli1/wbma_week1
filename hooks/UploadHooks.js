@@ -77,12 +77,21 @@ const useUploadForm = (callback) => {
         return true;
     };
 
+    const reset = () => {
+        setInputs({
+            title: '',
+            description: ''
+        });
+        setUploadErrors({});
+    };
+
     return {
         handleInputChange,
         inputs,
         handleInputEnd,
         validateOnSend,
         uploadErrors,
+        reset
     };
 };
 
