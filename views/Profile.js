@@ -60,6 +60,16 @@ const Profile = ({ navigation }) => {
                     />
                     <Text>{user.full_name}</Text>
                 </ListItem>
+                <ListItem
+                    bottomDivider
+                    onPress={() => navigation.push('My Files')}
+                >
+                    <Avatar icon={{ name: 'perm-media', color: 'black' }} />
+                    <ListItem.Content>
+                        <ListItem.Title>My Files</ListItem.Title>
+                    </ListItem.Content>
+                    <ListItem.Chevron />
+                </ListItem>
                 <Button title={'Logout'} onPress={logout} />
             </Card>
         </ScrollView>

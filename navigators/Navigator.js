@@ -12,6 +12,8 @@ import Login from '../views/Login';
 import { MainContext } from '../contexts/MainContext';
 import { Icon } from 'react-native-elements';
 import Upload from '../views/Upload';
+import MyFiles from '../views/MyFiles';
+import Modify from '../views/Modify';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -30,7 +32,7 @@ const TabScreen = () => {
                             iconName = 'account-box';
                             break;
                         case 'Upload':
-                            iconName = 'cloud';
+                            iconName = 'cloud-upload';
                             break;
                     }
                     return <Icon name={iconName} size={size} color={color} />;
@@ -57,6 +59,8 @@ const StackScreen = () => {
                             headerTitle: getFocusedRouteNameFromRoute(route)
                         })}
                     />
+                    <Stack.Screen name="Modify" component={Modify} />
+                    <Stack.Screen name="My Files" component={MyFiles} />
                     <Stack.Screen name="Single" component={Single} />
                 </>
             ) : (

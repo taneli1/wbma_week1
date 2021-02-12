@@ -31,6 +31,7 @@ const useUploadForm = (callback) => {
 
     const handleInputChange = (name, text) => {
         console.log(text);
+
         setInputs((inputs) => {
             return {
                 ...inputs,
@@ -91,7 +92,8 @@ const useUploadForm = (callback) => {
         handleInputEnd,
         validateOnSend,
         uploadErrors,
-        reset
+        reset,
+        setInputs
     };
 };
 

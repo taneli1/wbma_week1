@@ -1,37 +1,138 @@
-import React from 'react';
-import { StyleSheet, SafeAreaView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, ActivityIndicator } from 'react-native';
 import PropTypes from 'prop-types';
 import { uploadsUrl } from '../utils/variables';
-import { Image, Text, Card, colors } from 'react-native-elements';
+import { Avatar, Card, ListItem, Text } from 'react-native-elements';
 import moment from 'moment';
+import { useTag, useUser } from '../hooks/ApiHooks';
+import { Video } from 'expo-av';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const Single = ({ route }) => {
     const { file } = route.params;
+    const [avatar, setAvatar] = useState('http://placekitten.com/400');
+    const [owner, setOwner] = useState({ username: 'user' });
+    const { getByTag } = useTag();
+    const { getUser } = useUser();
+    const [videoRef, setVideoRef] = useState(null);
+
+    const fetchAvatar = async () => {
+        try {
+            const avatarList = await getByTag('avatar_' + file.user_id);
+            if (avatarList.length > 0) {
+                setAvatar(uploadsUrl + avatarList.pop().filename);
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
+    };
+    const fetchOwner = async () => {
+        try {
+            const userToken = await AsyncStorage.getItem('userToken');
+            const userData = await getUser(file.user_id, userToken);
+            setOwner(userData);
+        } catch (error) {
+            console.error(error.message);
+        }
+    };
+
+    const unlock = async () => {
+        try {
+            await ScreenOrientation.unlockAsync();
+        } catch (error) {
+            console.error('unlock', error.message);
+        }
+    };
+
+    const lock = async () => {
+        try {
+            await ScreenOrientation.lockAsync(
+                ScreenOrientation.OrientationLock.PORTRAIT_UP
+            );
+        } catch (error) {
+            console.error('lock', error.message);
+        }
+    };
+
+    const handleVideoRef = (component) => {
+        setVideoRef(component);
+    };
+
+    const showVideoInFullscreen = async () => {
+        try {
+            if (videoRef) await videoRef.presentFullscreenPlayer();
+        } catch (error) {
+            console.error('fullscreen', error.message);
+        }
+    };
+
+    useEffect(() => {
+        unlock();
+        fetchAvatar();
+        fetchOwner();
+
+        const orientSub = ScreenOrientation.addOrientationChangeListener(
+            (evt) => {
+                console.log('orientation', evt);
+                if (evt.orientationInfo.orientation > 2) {
+                    showVideoInFullscreen();
+                }
+            }
+        );
+
+        return () => {
+            ScreenOrientation.removeOrientationChangeListener(orientSub);
+            lock();
+        };
+    }, [videoRef]);
+
     return (
-        <SafeAreaView style={styles.container}>
+        <ScrollView>
             <Card>
                 <Card.Title h4>{file.title}</Card.Title>
                 <Card.Title>{moment(file.time_added).format('LLL')}</Card.Title>
                 <Card.Divider />
-                <Card.Image
-                    source={{ uri: uploadsUrl + file.filename }}
-                    style={{ width: 300, height: 300 }}
-                    resizeMode="contain"
-                ></Card.Image>
+                {file.media_type === 'image' ? (
+                    <Card.Image
+                        source={{ uri: uploadsUrl + file.filename }}
+                        style={styles.image}
+                        PlaceholderContent={<ActivityIndicator />}
+                    />
+                ) : (
+                    <Video
+                        ref={handleVideoRef}
+                        source={{ uri: uploadsUrl + file.filename }}
+                        style={styles.image}
+                        useNativeControls={true}
+                        resizeMode="cover"
+                        onError={(err) => {
+                            console.error('video', err);
+                        }}
+                        posterSource={{ uri: uploadsUrl + file.screenshot }}
+                    />
+                )}
                 <Card.Divider />
-                <Text style={{ marginStart: 10 }}>{file.description}</Text>
+                <Text style={styles.description}>{file.description}</Text>
+                <ListItem>
+                    <Avatar source={{ uri: avatar }} />
+                    <Text>{owner.username}</Text>
+                </ListItem>
             </Card>
-        </SafeAreaView>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center'
+    image: {
+        width: '100%',
+        height: undefined,
+        aspectRatio: 1
     },
-    box: {}
+    description: {
+        marginBottom: 10
+    }
 });
 
 Single.propTypes = {
